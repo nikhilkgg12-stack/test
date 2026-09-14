@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Favorite Contacts - Contact Book</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Common Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="nav-brand">
+                📖 ContactBook
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('contacts_page') }}">Contacts</a></li>
+                <li><a href="{{ url_for('add_contact') }}">Add Contact</a></li>
+                <li><a href="{{ url_for('favorites_page') }}" class="active">Favorites</a></li>
+                <li><a href="{{ url_for('about_page') }}">About</a></li>
+                {% if is_logged_in %}
+                    <li class="nav-user-item">
+                        <span class="user-badge" title="Logged in user">👤 {{ current_user }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn-logout" title="Log out">Logout 🚪</a>
+                    </li>
+                {% else %}
+                    <li><a href="{{ url_for('login_page') }}" class="btn-login-nav">Login 🔑</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+
+        <!-- Flash Alert Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <h1>⭐ Favorite Contacts</h1>
+                <p>Quick access to your most important and starred contacts.</p>
+            </div>
+            <div>
+                <a href="{{ url_for('contacts_page') }}" class="btn btn-secondary">&larr; All Contacts</a>
+            </div>
+        </div>
+
+        <!-- Favorites Table / Card -->
+        <div class="card">
+            {% if favorites and favorites|length > 0 %}
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Email</th>
+                                <th>Group</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contact in favorites %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ contact.name }}</strong>
+                                        <span class="badge-fav" title="Favorite" style="margin-left: 5px;">⭐</span>
+                                    </td>
+                                    <td>{{ contact.phone }}</td>
+                                    <td>{{ contact.email if contact.email else '-' }}</td>
+                                    <td>
+                                        <span class="badge badge-group">
+                                            {{ contact.group_name if contact.group_name else 'General' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="action-buttons" style="justify-content: flex-end;">
+                                            <!-- View Button -->
+                                            <a href="{{ url_for('contact_details', id=contact.id) }}" class="btn btn-secondary btn-sm" title="View Details">
+                                                View
+                                            </a>
+
+                                            <!-- Edit Button -->
+                                            <a href="{{ url_for('edit_contact', id=contact.id) }}" class="btn btn-secondary btn-sm" title="Edit Contact">
+                                                Edit
+                                            </a>
+
+                                            <!-- Delete Button Form with JS Confirmation -->
+                                            <form action="{{ url_for('delete_contact', id=contact.id) }}" method="POST" style="display:inline;" data-name="{{ contact.name }}" onsubmit="return confirmDelete(event)">
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Delete Contact">
+                                                    Delete
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <p>No favorite contacts found.</p>
+                    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
+                        You can star a contact by checking the "Mark as Favorite" box when adding or editing a contact.
+                    </p>
+                    <a href="{{ url_for('contacts_page') }}" class="btn btn-primary btn-sm">Browse All Contacts</a>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Contact Book & Address Manager &bull; College Full-Stack Python Project</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

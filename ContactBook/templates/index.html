@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Contact Book</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Common Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="nav-brand">
+                📖 ContactBook
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}" class="active">Home</a></li>
+                <li><a href="{{ url_for('contacts_page') }}">Contacts</a></li>
+                <li><a href="{{ url_for('add_contact') }}">Add Contact</a></li>
+                <li><a href="{{ url_for('favorites_page') }}">Favorites</a></li>
+                <li><a href="{{ url_for('about_page') }}">About</a></li>
+                {% if is_logged_in %}
+                    <li class="nav-user-item">
+                        <span class="user-badge" title="Logged in user">👤 {{ current_user }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn-logout" title="Log out">Logout 🚪</a>
+                    </li>
+                {% else %}
+                    <li><a href="{{ url_for('login_page') }}" class="btn-login-nav">Login 🔑</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+
+        <!-- Flash Alert Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="page-title">
+                <h1>Dashboard</h1>
+                <p>Manage your contacts easily in one place.</p>
+            </div>
+            <div>
+                <a href="{{ url_for('add_contact') }}" class="btn btn-primary">+ Add Contact</a>
+            </div>
+        </div>
+
+        <!-- Real-time Statistics Cards (Fetched from MySQL) -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                    <h3>{{ total_contacts }}</h3>
+                    <p>Total Contacts</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon favorite-icon">⭐</div>
+                <div class="stat-info">
+                    <h3>{{ total_favorites }}</h3>
+                    <p>Favorite Contacts</p>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon group-icon">🏷️</div>
+                <div class="stat-info">
+                    <h3>{{ total_groups }}</h3>
+                    <p>Total Groups</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recently Added Contacts Section -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="font-size: 1.25rem; font-weight: 600;">Recently Added Contacts</h2>
+                <a href="{{ url_for('contacts_page') }}" style="color: var(--primary-color); text-decoration: none; font-size: 0.9rem; font-weight: 500;">
+                    View All &rarr;
+                </a>
+            </div>
+
+            {% if recent_contacts and recent_contacts|length > 0 %}
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Phone</th>
+                                <th>Group</th>
+                                <th>Favorite</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for contact in recent_contacts %}
+                                <tr>
+                                    <td><strong>{{ contact.name }}</strong></td>
+                                    <td>{{ contact.phone }}</td>
+                                    <td>
+                                        <span class="badge badge-group">
+                                            {{ contact.group_name if contact.group_name else 'General' }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        {% if contact.favorite %}
+                                            <span class="badge-fav" title="Favorite">⭐</span>
+                                        {% else %}
+                                            <span style="color: #cbd5e1;">☆</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{{ url_for('contact_details', id=contact.id) }}" class="btn btn-secondary btn-sm">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="empty-state">
+                    <p>No contacts saved yet.</p>
+                    <a href="{{ url_for('add_contact') }}" class="btn btn-primary btn-sm">+ Add Your First Contact</a>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Contact Book & Address Manager &bull; College Full-Stack Python Project</p>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

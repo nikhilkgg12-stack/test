@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Contact Book</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <!-- Common Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('home') }}" class="nav-brand">
+                📖 ContactBook
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('about_page') }}">About</a></li>
+                <li><a href="{{ url_for('login_page') }}" class="active">Login</a></li>
+                <li><a href="{{ url_for('register_page') }}">Register</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container" style="max-width: 480px; margin-top: 40px;">
+
+        <!-- Flash Alert Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Login Card -->
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-icon">🔐</div>
+                <h1>Welcome Back</h1>
+                <p>Sign in to manage your contact address book</p>
+            </div>
+
+            <!-- Demo Account Helper Box -->
+            <div class="demo-box" id="demoBox" onclick="fillDemoCredentials()" title="Click to autofill demo credentials">
+                <div class="demo-badge">💡 Quick Demo Login</div>
+                <div class="demo-info">
+                    <span>Username: <strong>admin</strong></span> &bull; 
+                    <span>Password: <strong>admin123</strong></span>
+                </div>
+                <small class="demo-hint">(Click here to auto-fill)</small>
+            </div>
+
+            <form action="{{ url_for('login_page', next=request.args.get('next')) }}" method="POST" class="auth-form">
+                <!-- Username -->
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username" 
+                        class="form-control" 
+                        placeholder="Enter your username" 
+                        value="{{ username or '' }}" 
+                        required 
+                        autofocus
+                    >
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="password-wrapper">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            class="form-control" 
+                            placeholder="Enter your password" 
+                            required
+                        >
+                        <button type="button" class="btn-toggle-pwd" onclick="togglePasswordVisibility('password', this)" title="Show/Hide Password">👁️</button>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="btn btn-primary auth-submit-btn">
+                    Sign In 🚀
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="{{ url_for('register_page') }}">Register here</a></p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer" style="margin-top: auto;">
+        <div class="footer-container">
+            <p>📖 Contact Book Application &bull; Secured with Password Hashing & Session Management</p>
+        </div>
+    </footer>
+
+    <script>
+        function fillDemoCredentials() {
+            document.getElementById('username').value = 'admin';
+            document.getElementById('password').value = 'admin123';
+            const demoBox = document.getElementById('demoBox');
+            demoBox.style.borderColor = '#16a34a';
+            demoBox.style.backgroundColor = '#f0fdf4';
+            setTimeout(() => {
+                demoBox.style.borderColor = '';
+                demoBox.style.backgroundColor = '';
+            }, 1000);
+        }
+
+        function togglePasswordVisibility(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁️';
+            }
+        }
+    </script>
+</body>
+</html>
