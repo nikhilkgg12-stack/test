@@ -134,7 +134,7 @@ def init_database():
             address VARCHAR(255),
             group_name VARCHAR(50),
             favorite BOOLEAN DEFAULT FALSE,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         """
         cursor.execute(create_table_query)
@@ -145,7 +145,7 @@ def init_database():
             id INT PRIMARY KEY AUTO_INCREMENT,
             username VARCHAR(50) UNIQUE NOT NULL,
             password_hash VARCHAR(255) NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         """
         cursor.execute(create_users_table)
